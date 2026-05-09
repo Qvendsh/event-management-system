@@ -1,66 +1,108 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import {
+    Box,
+    Button,
+    Container,
+    Paper,
+    Stack,
+    Typography,
+} from '@mui/material';
+import { NextLink } from '@/components/common/NextLink';
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+export default function HomePage() {
+    return (
+        <Box
+            sx={{
+                py: {
+                    xs: 8,
+                    md: 12,
+                },
+            }}
+        >
+            <Container maxWidth="lg">
+                <Paper
+                    sx={{
+                        p: {
+                            xs: 3,
+                            md: 6,
+                        },
+                        borderRadius: 6,
+                        overflow: 'hidden',
+                        position: 'relative',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                    }}
+                >
+                    <Stack spacing={3} sx={{ maxWidth: 760 }}>
+                        <Typography
+                            component="p"
+                            color="primary"
+                            sx={{
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.12em',
+                                fontSize: 13,
+                            }}
+                        >
+                            Event Management System
+                        </Typography>
+
+                        <Typography
+                            component="h1"
+                            variant="h2"
+                            sx={{
+                                fontSize: {
+                                    xs: 38,
+                                    md: 64,
+                                },
+                            }}
+                        >
+                            Create, manage and discover events in one place.
+                        </Typography>
+
+                        <Typography
+                            color="text.secondary"
+                            sx={{
+                                fontSize: {
+                                    xs: 17,
+                                    md: 20,
+                                },
+                                lineHeight: 1.7,
+                            }}
+                        >
+                            Manage event details, filter events, update information and find
+                            similar events using a simple recommendation algorithm.
+                        </Typography>
+
+                        <Stack
+                            direction={{
+                                xs: 'column',
+                                sm: 'row',
+                            }}
+                            spacing={2}
+                        >
+                            <Button
+                                component={NextLink}
+                                href="/events"
+                                variant="contained"
+                                size="large"
+                                endIcon={<ArrowForwardIcon />}
+                            >
+                                View events
+                            </Button>
+
+                            <Button
+                                component={NextLink}
+                                href="/events/new"
+                                variant="outlined"
+                                size="large"
+                            >
+                                Create event
+                            </Button>
+                        </Stack>
+                    </Stack>
+                </Paper>
+            </Container>
+        </Box>
+    );
 }
