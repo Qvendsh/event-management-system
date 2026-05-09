@@ -1,6 +1,7 @@
 'use client';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
     Alert,
@@ -10,9 +11,12 @@ import {
     Container,
     Stack,
 } from '@mui/material';
+import { useState } from 'react';
 import { NextLink } from '@/components/common/NextLink';
+import { DeleteEventDialog } from '../components/DeleteEventDialog';
 import { EventDetailsCard } from '../components/EventDetailsCard';
 import { SimilarEventsSection } from '../components/SimilarEventsSection';
+import { useDeleteEvent } from '../hooks/use-delete-event';
 import { useEventDetails } from '../hooks/use-event-details';
 
 type EventDetailsPageProps = {
@@ -20,8 +24,35 @@ type EventDetailsPageProps = {
 };
 
 export function EventDetailsPage({ eventId }: EventDetailsPageProps) {
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
     const { event, recommendations, isLoading, error, refetch } =
         useEventDetails(eventId);
+
+    const {
+        deleteEvent,
+        isDeleting,
+        error: deleteError,
+        clearError,
+    } = useDeleteEvent();
+
+    const openDeleteDialog = () => {
+        clearError();
+        setIsDeleteDialogOpen(true);
+    };
+
+    const closeDeleteDialog = () => {
+        if (isDeleting) {
+            return;
+        }
+
+        clearError();
+        setIsDeleteDialogOpen(false);
+    };
+
+    const handleDelete = async () => {
+        await deleteEvent(eventId);
+    };
 
     return (
         <Box sx={{ py: { xs: 4, md: 6 } }}>
@@ -51,14 +82,31 @@ export function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                         </Button>
 
                         {event && (
-                            <Button
-                                component={NextLink}
-                                href={`/events/${event.id}/edit`}
-                                variant="contained"
-                                startIcon={<EditIcon />}
+                            <Stack
+                                direction={{
+                                    xs: 'column',
+                                    sm: 'row',
+                                }}
+                                spacing={1.5}
                             >
-                                Edit event
-                            </Button>
+                                <Button
+                                    component={NextLink}
+                                    href={`/events/${event.id}/edit`}
+                                    variant="contained"
+                                    startIcon={<EditIcon />}
+                                >
+                                    Edit event
+                                </Button>
+
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    startIcon={<DeleteIcon />}
+                                    onClick={openDeleteDialog}
+                                >
+                                    Delete event
+                                </Button>
+                            </Stack>
                         )}
                     </Stack>
 
@@ -88,10 +136,21 @@ export function EventDetailsPage({ eventId }: EventDetailsPageProps) {
                     )}
 
                     {!isLoading && !error && event && (
-                        <Stack spacing={4}>
-                            <EventDetailsCard event={event} />
-                            <SimilarEventsSection events={recommendations} />
-                        </Stack>
+                        <>
+                            <Stack spacing={4}>
+                                <EventDetailsCard event={event} />
+                                <SimilarEventsSection events={recommendations} />
+                            </Stack>
+
+                            <DeleteEventDialog
+                                open={isDeleteDialogOpen}
+                                eventTitle={event.title}
+                                isDeleting={isDeleting}
+                                error={deleteError}
+                                onClose={closeDeleteDialog}
+                                onConfirm={handleDelete}
+                            />
+                        </>
                     )}
                 </Stack>
             </Container>
