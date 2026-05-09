@@ -31,6 +31,11 @@ export class EventsController {
         return this.eventsService.findAll(query);
     }
 
+    @Get(':id/recommendations')
+    findRecommendations(@Param('id', ParseIntPipe) id: number) {
+        return this.eventsService.findRecommendations(id);
+    }
+
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.eventsService.findOne(id);

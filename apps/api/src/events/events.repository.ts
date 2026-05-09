@@ -8,6 +8,7 @@ import {
 import {
     CreateEventData,
     FindAllEventsParams,
+    FindRecommendationCandidatesParams,
     UpdateEventData,
 } from './events.types';
 
@@ -53,6 +54,46 @@ export class EventsRepository {
     findById(id: number): Promise<Event | null> {
         return this.prisma.event.findUnique({
             where: { id },
+        });
+    }
+
+    findRecommendationCandidates(
+        params: FindRecommendationCandidatesParams,
+    ): Promise<Event[]> {
+        const { eventId, category, location, dateFrom, dateTo, limit } = params;
+
+        return this.prisma.event.findMany({
+            where: {
+                id: {
+                    not: eventId,
+                },
+                OR: [
+                    {
+                        category,
+                    },
+                    {
+                        location: {
+                            equals: location,
+                            mode: 'insensitive',
+                        },
+                    },
+                    {
+                        date: {
+                            gte: dateFrom,
+                            lte: dateTo,
+                        },
+                    },
+                ],
+            },
+            orderBy: [
+                {
+                    date: 'asc',
+                },
+                {
+                    createdAt: 'desc',
+                },
+            ],
+            take: limit,
         });
     }
 
