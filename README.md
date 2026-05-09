@@ -2,7 +2,7 @@
 
 A full-stack Event Management System built with Next.js, NestJS, PostgreSQL, Prisma and Material UI.
 
-The application allows users to create, view, update and delete events. It also includes a simple recommendation algorithm that suggests similar events based on category, location and date.
+The application allows users to create, view, update and delete events. It also includes filtering, sorting and a simple recommendation algorithm for suggesting similar events.
 
 ## Tech Stack
 
@@ -11,6 +11,10 @@ The application allows users to create, view, update and delete events. It also 
 - Next.js
 - TypeScript
 - Material UI
+- React Hook Form
+- Zod
+- Axios
+
 ### Backend
 
 - NestJS
@@ -18,10 +22,14 @@ The application allows users to create, view, update and delete events. It also 
 - Prisma ORM
 - PostgreSQL
 - Docker
+- class-validator
+- class-transformer
+
 ### Monorepo
 
 - npm workspaces
 - Turborepo
+
 ## Project Structure
 
 ```txt
@@ -36,20 +44,41 @@ event-management-system/
   README.md
 ```
 
-## Backend Features
+## Features
 
-- Create event
-- Get all events
-- Get event by id
-- Update event
-- Delete event
-- Filter events by category
-- Filter events by date range
-- Sort events by date, title, category or creation date
-- Recommend similar events
-- Request validation
-- Global error handling
-- Seed data
+### Backend
+
+- REST API for events
+- Create, read, update and delete events
+- Request validation with DTOs
+- Repository layer for database access
+- PostgreSQL database with Prisma ORM
+- Prisma migrations and seed data
+- Filtering by category and date range
+- Sorting by date, title, category or creation date
+- Event recommendation algorithm
+- Global exception filter
+- CORS configuration
+
+### Frontend
+
+- Responsive Material UI layout
+- Events list page with cards, filters and sorting
+- Event details page with similar events section
+- Create and edit event forms
+- Delete event confirmation dialog
+- Loading, error and empty states
+
+## Frontend Routes
+
+| Route | Description |
+|-------|-------------|
+| `/` | Home page |
+| `/events` | Events list with filters and sorting |
+| `/events/:id` | Event details page with similar events |
+| `/events/new` | Create event page |
+| `/events/:id/edit` | Edit event page |
+
 ## Backend API
 
 Base URL:
@@ -58,7 +87,7 @@ Base URL:
 http://localhost:5000/api
 ```
 
-### Events
+### Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -75,11 +104,11 @@ http://localhost:5000/api
 
 | Query | Description | Example |
 |-------|-------------|---------|
-| category | Filter by event category | MEETUP |
-| dateFrom | Filter events from date | 2026-06-01T00:00:00.000Z |
-| dateTo | Filter events to date | 2026-06-30T23:59:59.000Z |
-| sortBy | Sort by field | date, createdAt, title, category |
-| order | Sort order | asc, desc |
+| `category` | Filter by event category | `MEETUP` |
+| `dateFrom` | Filter events from date | `2026-06-01T00:00:00.000Z` |
+| `dateTo` | Filter events to date | `2026-06-30T23:59:59.000Z` |
+| `sortBy` | Sort by field | `date`, `createdAt`, `title`, `category` |
+| `order` | Sort order | `asc`, `desc` |
 
 Example:
 
@@ -95,6 +124,7 @@ GET /api/events?category=MEETUP&sortBy=date&order=asc
 - `CONCERT`
 - `SPORT`
 - `OTHER`
+
 ### Create Event Example
 
 ```http
@@ -125,7 +155,7 @@ PATCH /api/events/1
 }
 ```
 
-## Recommendation Algorithm
+### Recommendation Algorithm
 
 The recommendation endpoint suggests similar events based on a simple scoring system.
 
@@ -168,6 +198,19 @@ Example response:
 ]
 ```
 
+### Error Response Format
+
+```json
+{
+  "statusCode": 404,
+  "message": "Event with id 999 not found",
+  "error": "Not Found",
+  "timestamp": "2026-05-09T15:20:00.000Z",
+  "path": "/api/events/999",
+  "method": "GET"
+}
+```
+
 ## Getting Started
 
 ### 1. Clone the repository
@@ -191,11 +234,7 @@ Example response:
 
 ### 4. Create backend environment file
 
-Create file: `apps/api/.env`
-
-Use values from: `apps/api/.env.example`
-
-Example:
+Create file: `apps/api/.env` (use `apps/api/.env.example` as reference)
 
 ```env
 DATABASE_URL="postgresql://ems_user:ems_password@localhost:5432/ems_db?schema=public"
@@ -203,56 +242,51 @@ PORT=5000
 FRONTEND_URL="http://localhost:3000"
 ```
 
-### 5. Run Prisma migration
+### 5. Create frontend environment file
+
+Create file: `apps/web/.env.local` (use `apps/web/.env.example` as reference)
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
+```
+
+### 6. Run Prisma migration
 
 ```bash
   npm run prisma:migrate
 ```
 
-### 6. Seed database
+### 7. Seed database
 
 ```bash
   npm run prisma:seed
 ```
 
-### 7. Start backend
+### 8. Start the apps
 
 ```bash
-  npm run dev:api
+  # Run frontend and backend together
+  npm run dev
+
+# Or run separately
+
+  npm run dev:api   # http://localhost:5000/api
+  npm run dev:web   # http://localhost:3000
 ```
-
-Backend will run on: `http://localhost:5000/api`
-
-### 8. Start frontend
-
-```bash
-  npm run dev:web
-```
-
-Frontend will run on: `http://localhost:3000`
 
 ## Useful Commands
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Runs frontend and backend together using Turborepo |
-| `npm run dev:api` | Runs only NestJS backend |
-| `npm run dev:web` | Runs only Next.js frontend |
-| `npm run db:up` | Starts PostgreSQL container |
-| `npm run db:down` | Stops PostgreSQL container |
-| `npm run prisma:migrate` | Runs Prisma migrations |
-| `npm run prisma:seed` | Seeds database with test events |
-| `npm run build` | Builds all apps |
-
-## Error Response Format
-
-```json
-{
-  "statusCode": 404,
-  "message": "Event with id 999 not found",
-  "error": "Not Found",
-  "timestamp": "2026-05-09T15:20:00.000Z",
-  "path": "/api/events/999",
-  "method": "GET"
-}
-```
+| `npm run dev` | Run frontend and backend together |
+| `npm run dev:api` | Run backend only |
+| `npm run dev:web` | Run frontend only |
+| `npm run build` | Build all apps |
+| `npm run build --workspace=apps/api` | Build backend only |
+| `npm run build --workspace=apps/web` | Build frontend only |
+| `npm run db:up` | Start PostgreSQL container |
+| `npm run db:down` | Stop PostgreSQL container |
+| `npm run db:logs` | View PostgreSQL logs |
+| `npm run prisma:migrate` | Run Prisma migrations |
+| `npm run prisma:generate` | Generate Prisma client |
+| `npm run prisma:seed` | Seed database with test events |
