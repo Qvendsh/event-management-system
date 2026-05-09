@@ -26,7 +26,11 @@ export default function HomePage() {
                             xs: 3,
                             md: 6,
                         },
-                        borderRadius: 6,
+                        borderRadius: {
+                            xs: '24px',
+                            sm: '32px',
+                            md: '48px',
+                        },
                         overflow: 'hidden',
                         position: 'relative',
                         border: '1px solid',
