@@ -13,6 +13,7 @@
     "dev:api": "npm run start:dev --workspace=apps/api",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f postgres",
     "prisma:generate": "npm run prisma:generate --workspace=apps/api",
     "prisma:migrate": "npm run prisma:migrate --workspace=apps/api"
   },
